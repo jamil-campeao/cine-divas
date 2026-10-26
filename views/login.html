@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="pagina-conta">
+    <div class="brilhos" aria-hidden="true">✧･ﾟ: *✧･ﾟ:* ♡ *:･ﾟ✧*:･ﾟ✧</div>
+
+    <div class="janela">
+        <div class="janela-barra">
+            <span>login.exe</span>
+            <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
+        </div>
+
+        <div class="janela-corpo">
+            <h1 class="titulo-cromado">entrar</h1>
+            <p class="subtexto">Seus romances favoritos estão te esperando, diva. ♡</p>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" class="formulario">
+                <label for="email">seu e-mail</label>
+                <input type="email" id="email" name="email" value="{{ email or '' }}"
+                       placeholder="diva@email.com" autocomplete="email" required>
+
+                <label for="senha">sua senha</label>
+                <input type="password" id="senha" name="senha"
+                       placeholder="••••••••" autocomplete="current-password" required>
+
+                <button type="submit" class="botao-gel">entrar no clube ♡</button>
+            </form>
+
+            <div class="caixa-cadastro">
+                <p>Você tem cadastro?</p>
+                <a class="link-brilho" href="{{ url_for('auth.cadastro') }}">Não? Clique aqui e cadastre-se ✧</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="brilhos" aria-hidden="true">♡ girls just wanna watch rom-coms ♡</div>
+</section>
+{% endblock %}

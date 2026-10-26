@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="pagina-conta">
+    <div class="brilhos" aria-hidden="true">✧ your rom-com era starts here ✧</div>
+
+    <div class="janela">
+        <div class="janela-barra">
+            <span>cadastro.exe</span>
+            <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
+        </div>
+
+        <div class="janela-corpo">
+            <h1 class="titulo-cromado">nova diva</h1>
+            <p class="subtexto">Cria sua conta e vem fazer parte do clube mais apaixonado por filmes. 💋</p>
+
+            <form method="POST" action="{{ url_for('auth.cadastro') }}" class="formulario">
+                <label for="nome">seu nome</label>
+                <input type="text" id="nome" name="nome" value="{{ nome or '' }}"
+                       placeholder="Elle Woods" autocomplete="name" required>
+
+                <label for="email">seu e-mail <small>(vai ser seu login)</small></label>
+                <input type="email" id="email" name="email" value="{{ email or '' }}"
+                       placeholder="diva@email.com" autocomplete="email" required>
+
+                <label for="senha">crie uma senha</label>
+                <input type="password" id="senha" name="senha" minlength="6"
+                       placeholder="mínimo 6 caracteres" autocomplete="new-password" required>
+
+                <label for="confirmar_senha">confirme a senha</label>
+                <input type="password" id="confirmar_senha" name="confirmar_senha" minlength="6"
+                       placeholder="digita de novo, diva" autocomplete="new-password" required>
+
+                <button type="submit" class="botao-gel">criar minha conta ♡</button>
+            </form>
+
+            <div class="caixa-cadastro">
+                <p>Já tem cadastro?</p>
+                <a class="link-brilho" href="{{ url_for('auth.login') }}">Entrar aqui ✧</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

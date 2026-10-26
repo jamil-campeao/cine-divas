@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cine Divas{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Silkscreen&family=Quicksand:wght@500;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="faixa-marquee" aria-hidden="true">
+        <div class="marquee-texto">
+            ★ bem-vinda ao cine divas ★ só romance, só drama, só glitter ★ best viewed in 800x600 ★ xoxo ★
+            bem-vinda ao cine divas ★ só romance, só drama, só glitter ★ best viewed in 800x600 ★ xoxo ★
+        </div>
+    </div>
+
+    <header class="topo">
+        <a class="logo" href="{{ url_for('filmes.inicio') }}">
+            <span class="logo-script">Cine Divas</span>
+            <span class="logo-sub">✧ romance movie club ✧</span>
+        </a>
+
+        <nav class="menu">
+            {% if session.usuario_id %}
+                <span class="ola">oi, {{ session.usuario_nome }} ♡</span>
+                <a class="botao-cromado" href="{{ url_for('filmes.lista') }}">filmes</a>
+                <a class="botao-cromado" href="{{ url_for('auth.logout') }}">sair</a>
+            {% else %}
+                <a class="botao-cromado" href="{{ url_for('auth.login') }}">entrar</a>
+                <a class="botao-cromado" href="{{ url_for('auth.cadastro') }}">cadastro</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            <div class="mensagens">
+                {% for categoria, mensagem in mensagens %}
+                    <p class="mensagem mensagem-{{ categoria }}">{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="rodape">
+        <p class="contador-visitas">visitantes: <span>000{{ range(1000, 9999) | random }}</span></p>
+        <p>♡ cine divas © 2000-sempre ♡ feito com glitter e corações partidos ✧</p>
+    </footer>
+</body>
+</html>

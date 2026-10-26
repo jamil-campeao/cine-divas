@@ -1,0 +1,652 @@
+/* ==========================================================
+   CINE DIVAS — tema Y2K (rosa + prata cromado, bem brega)
+   ========================================================== */
+
+:root {
+    --rosa-choque: #ff1493;
+    --rosa: #ff69b4;
+    --rosa-claro: #ffc6e5;
+    --rosa-bebe: #ffe6f4;
+    --rosa-escuro: #b3006b;
+    --prata: #c0c0c8;
+    --prata-claro: #f4f4f8;
+    --prata-escuro: #8a8a96;
+    --texto: #4a0d33;
+
+    --cromado: linear-gradient(180deg, #ffffff 0%, #e8e8ee 22%, #a9a9b6 48%, #f8f8fc 52%, #d2d2dc 78%, #9a9aa8 100%);
+    --cromado-rosa: linear-gradient(180deg, #fff 0%, #ffd2ea 25%, #ff5cae 50%, #ff8cc8 55%, #ffd2ea 80%, #fff 100%);
+    --gel: linear-gradient(180deg, #ff9ed2 0%, #ff3fa4 50%, #e0007a 51%, #ff4fae 100%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--texto);
+    font-family: 'Quicksand', 'Trebuchet MS', sans-serif;
+    font-weight: 500;
+    background-color: var(--rosa-bebe);
+    /* estrelinhas + xadrez rosa clássico de blog 2004 */
+    background-image:
+        radial-gradient(circle, #ffffff 1.5px, transparent 2px),
+        radial-gradient(circle, #ff9fd1 1px, transparent 1.5px),
+        conic-gradient(#ffd9ee 25%, #ffeef8 0 50%, #ffd9ee 0 75%, #ffeef8 0);
+    background-size: 60px 60px, 40px 40px, 48px 48px;
+    background-position: 0 0, 20px 20px, 0 0;
+    background-attachment: fixed;
+}
+
+a {
+    color: inherit;
+}
+
+/* ---------- Faixa com texto correndo (marquee) ---------- */
+
+.faixa-marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--rosa-choque);
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    padding: 6px 0;
+    border-bottom: 3px solid var(--prata);
+}
+
+.marquee-texto {
+    display: inline-block;
+    padding-left: 100%;
+    animation: correr 28s linear infinite;
+}
+
+@keyframes correr {
+    to { transform: translateX(-100%); }
+}
+
+/* ---------- Topo ---------- */
+
+.topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px 6%;
+    background: var(--cromado);
+    border-bottom: 4px double var(--rosa-choque);
+    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.25);
+}
+
+.logo {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.logo-script {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(30px, 5vw, 44px);
+    color: var(--rosa-choque);
+    text-shadow:
+        2px 2px 0 #fff,
+        4px 4px 0 var(--prata-escuro),
+        0 0 18px rgba(255, 105, 180, 0.8);
+}
+
+.logo-sub {
+    margin-top: 6px;
+    font-family: 'Silkscreen', monospace;
+    font-size: 11px;
+    color: var(--rosa-escuro);
+    letter-spacing: 2px;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ola {
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    color: var(--rosa-escuro);
+}
+
+/* ---------- Botões ---------- */
+
+.botao-cromado {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 2px solid var(--prata-escuro);
+    background: var(--cromado);
+    color: var(--rosa-escuro);
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s;
+}
+
+.botao-cromado:hover {
+    transform: translateY(-2px);
+    color: var(--rosa-choque);
+}
+
+.botao-gel {
+    display: inline-block;
+    padding: 12px 26px;
+    border: 2px solid var(--rosa-escuro);
+    border-radius: 999px;
+    background: var(--gel);
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-size: 14px;
+    text-decoration: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.6),
+        0 4px 0 var(--rosa-escuro),
+        0 8px 18px rgba(255, 20, 147, 0.35);
+    transition: transform 0.15s;
+}
+
+/* reflexo "gel" do botão estilo aqua */
+.botao-gel::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 10%;
+    width: 80%;
+    height: 45%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+.botao-gel:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.botao-gel:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.6), 0 1px 0 var(--rosa-escuro);
+}
+
+.link-brilho {
+    color: var(--rosa-choque);
+    font-weight: 700;
+    text-decoration: underline wavy var(--rosa);
+}
+
+.link-brilho:hover {
+    color: var(--rosa-escuro);
+    text-shadow: 0 0 8px var(--rosa);
+}
+
+/* ---------- Mensagens (flash) ---------- */
+
+.mensagens {
+    max-width: 560px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+}
+
+.mensagem {
+    margin: 0 0 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px dashed var(--rosa-choque);
+    background: #fff;
+    font-weight: 700;
+    text-align: center;
+}
+
+.mensagem-erro {
+    color: #c4003f;
+    background: #fff0f3;
+}
+
+.mensagem-sucesso {
+    color: var(--rosa-escuro);
+    border-style: solid;
+    background: var(--rosa-bebe);
+}
+
+/* ---------- Títulos cromados ---------- */
+
+.titulo-cromado {
+    margin: 10px 0;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: clamp(34px, 6vw, 52px);
+    line-height: 1.25;
+    background: var(--cromado-rosa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--rosa-escuro);
+    filter: drop-shadow(3px 3px 0 #fff) drop-shadow(0 0 10px rgba(255, 105, 180, 0.6));
+}
+
+.titulo-grande {
+    font-size: clamp(40px, 8vw, 76px);
+}
+
+.subtexto {
+    color: #8a3a6a;
+    line-height: 1.7;
+}
+
+/* ---------- Páginas de conta (login/cadastro) ---------- */
+
+.pagina-conta {
+    min-height: 70vh;
+    padding: 40px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.brilhos {
+    font-family: 'Silkscreen', monospace;
+    font-size: 13px;
+    color: var(--rosa-choque);
+    text-align: center;
+    animation: piscar 1.6s steps(2) infinite;
+}
+
+@keyframes piscar {
+    50% { opacity: 0.35; }
+}
+
+/* janela estilo Windows 98 / MSN, mas rosa */
+.janela {
+    width: 100%;
+    max-width: 440px;
+    border: 3px solid var(--prata-escuro);
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 4px var(--prata-claro),
+        0 0 0 6px var(--rosa),
+        10px 12px 0 6px rgba(255, 20, 147, 0.25);
+}
+
+.janela-larga {
+    max-width: 860px;
+}
+
+.janela-barra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: linear-gradient(90deg, var(--rosa-choque), var(--rosa), var(--prata));
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-size: 13px;
+    text-shadow: 1px 1px 0 var(--rosa-escuro);
+}
+
+.janela-botoes {
+    letter-spacing: 6px;
+}
+
+.janela-corpo {
+    padding: 28px 30px 30px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 240, 248, 0.92)),
+        radial-gradient(circle, var(--rosa-claro) 1px, transparent 1.5px);
+    background-size: auto, 14px 14px;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario label {
+    margin: 14px 0 6px;
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    color: var(--rosa-escuro);
+}
+
+.formulario label small {
+    font-family: 'Quicksand', sans-serif;
+    color: var(--prata-escuro);
+}
+
+input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--prata);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #f3f3f7, #fff 40%);
+    color: var(--texto);
+    font: inherit;
+    outline: none;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.08);
+}
+
+input:focus {
+    border-color: var(--rosa-choque);
+    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2), 0 0 12px rgba(255, 105, 180, 0.5);
+}
+
+.formulario .botao-gel {
+    margin-top: 24px;
+}
+
+.caixa-cadastro {
+    margin-top: 24px;
+    padding: 14px;
+    text-align: center;
+    border: 2px dotted var(--rosa);
+    border-radius: 12px;
+    background: var(--rosa-bebe);
+}
+
+.caixa-cadastro p {
+    margin: 0 0 6px;
+    font-family: 'Silkscreen', monospace;
+    font-size: 13px;
+    color: var(--rosa-escuro);
+}
+
+/* ---------- Lista de filmes ---------- */
+
+.hero {
+    padding: 50px 6% 20px;
+    text-align: center;
+}
+
+.hero .subtexto {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.selo {
+    display: inline-block;
+    margin: 0;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 2px solid var(--prata-escuro);
+    background: var(--cromado);
+    color: var(--rosa-escuro);
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    transform: rotate(-3deg);
+}
+
+.secao-filmes {
+    padding: 20px 6% 60px;
+}
+
+.busca {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.busca input {
+    flex: 1 1 260px;
+}
+
+.contador {
+    text-align: center;
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    color: var(--rosa-escuro);
+    margin: 18px 0 28px;
+}
+
+.grade-filmes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 26px;
+}
+
+.cartao-filme {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background: #fff;
+    border: 3px solid var(--prata);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 6px 6px 0 var(--rosa-claro);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cartao-filme:hover {
+    transform: translateY(-6px) rotate(-1deg);
+    border-color: var(--rosa-choque);
+    box-shadow: 8px 10px 0 var(--rosa), 0 0 24px rgba(255, 105, 180, 0.6);
+}
+
+/* moldura cromada do pôster, com brilho rosa e "adesivos" por cima */
+.poster-moldura {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: var(--cromado);
+    border-bottom: 3px solid var(--prata);
+}
+
+.poster-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+/* reflexo de vidro por cima da imagem */
+.poster-moldura::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(125deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 32%),
+        linear-gradient(0deg, rgba(255, 20, 147, 0.25), transparent 35%);
+    pointer-events: none;
+}
+
+.cartao-filme:hover .poster-img {
+    transform: scale(1.05);
+}
+
+.poster-numero {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    background: var(--gel);
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.poster-sticker {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 1;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: var(--cromado-rosa);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    transform: rotate(12deg);
+}
+
+.cartao-titulo {
+    margin: 0;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--rosa-choque);
+    text-shadow: 1px 1px 0 var(--prata-claro);
+}
+
+.cartao-titulo small {
+    font-family: 'Silkscreen', monospace;
+    font-size: 11px;
+    color: var(--prata-escuro);
+}
+
+.cartao-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px 16px;
+}
+
+.cartao-info p {
+    margin: 0;
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #6d2d55;
+}
+
+.mood {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--gel);
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-size: 11px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.ver-mais {
+    font-family: 'Silkscreen', monospace;
+    font-size: 12px;
+    color: var(--rosa-choque);
+    text-align: right;
+}
+
+.sem-resultados {
+    text-align: center;
+    font-family: 'Silkscreen', monospace;
+    color: var(--rosa-escuro);
+}
+
+/* ---------- Detalhe do filme ---------- */
+
+.detalhe {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.poster-detalhe {
+    border-radius: 12px;
+    border: 4px solid #fff;
+    outline: 2px solid var(--prata);
+    box-shadow: 8px 8px 0 var(--rosa-claro), 0 0 24px rgba(255, 105, 180, 0.5);
+}
+
+.detalhe-texto .titulo-cromado {
+    font-size: clamp(30px, 4.5vw, 44px);
+}
+
+.ano {
+    margin: 0;
+    font-family: 'Silkscreen', monospace;
+    font-size: 13px;
+    color: var(--prata-escuro);
+}
+
+.sinopse {
+    font-size: 17px;
+    line-height: 1.75;
+    margin: 18px 0 24px;
+}
+
+/* ---------- Rodapé ---------- */
+
+.rodape {
+    padding: 26px 16px;
+    text-align: center;
+    background: var(--cromado);
+    border-top: 4px double var(--rosa-choque);
+    font-family: 'Silkscreen', monospace;
+    font-size: 11px;
+    color: var(--rosa-escuro);
+}
+
+.rodape p {
+    margin: 6px 0;
+}
+
+.contador-visitas span {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #000;
+    color: #39ff14;
+    letter-spacing: 3px;
+    border: 2px inset var(--prata);
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 640px) {
+    .topo {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .logo {
+        align-items: center;
+    }
+
+    .menu {
+        justify-content: center;
+    }
+
+    .janela-corpo {
+        padding: 22px 18px 24px;
+    }
+
+    .detalhe {
+        grid-template-columns: 1fr;
+    }
+
+    .poster-detalhe {
+        max-width: 280px;
+        margin: 0 auto;
+    }
+}

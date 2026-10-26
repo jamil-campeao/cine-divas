@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Filmes ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="selo">★ top 10 romances ★</p>
+    <h1 class="titulo-cromado titulo-grande">filmes pra sentir tudo</h1>
+    <p class="subtexto">Dez romances pra rir, chorar, suspirar e acreditar no amor de novo. Pega a pipoca, diva. 🍿</p>
+</section>
+
+<section class="secao-filmes">
+    <form class="busca" method="GET" action="{{ url_for('filmes.lista') }}">
+        <input type="search" name="busca" value="{{ busca }}" placeholder="procurar um filme..." aria-label="Procurar filme">
+        <button type="submit" class="botao-gel">buscar ✧</button>
+        {% if busca %}<a class="link-brilho" href="{{ url_for('filmes.lista') }}">limpar</a>{% endif %}
+    </form>
+
+    <p class="contador">{{ filmes|length }} de {{ total }} filmes ♡</p>
+
+    {% if filmes %}
+    <div class="grade-filmes">
+        {% for filme in filmes %}
+        <a class="cartao-filme" href="{{ url_for('filmes.detalhe', slug=filme.slug) }}">
+            <div class="poster-moldura">
+                <img class="poster-img" src="{{ url_for('static', filename=filme.poster) }}"
+                     alt="Pôster de {{ filme.titulo }}" loading="lazy">
+                <span class="poster-numero">nº {{ "%02d"|format(loop.index) }}</span>
+                <span class="poster-sticker" aria-hidden="true">{{ filme.emoji }}</span>
+            </div>
+            <div class="cartao-info">
+                <span class="mood">{{ filme.mood }}</span>
+                <h2 class="cartao-titulo">{{ filme.titulo }} <small>({{ filme.ano }})</small></h2>
+                <p>{{ filme.sinopse }}</p>
+                <span class="ver-mais">ver mais →</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="sem-resultados">Nenhum filme encontrado, diva! 💔</p>
+    {% endif %}
+</section>
+{% endblock %}
