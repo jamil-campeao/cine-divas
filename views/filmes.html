@@ -4,9 +4,10 @@
 
 {% block content %}
 <section class="hero">
-    <p class="selo">★ top 10 romances ★</p>
+    <p class="selo">★ top romances ★</p>
     <h1 class="titulo-cromado titulo-grande">filmes pra sentir tudo</h1>
-    <p class="subtexto">Dez romances pra rir, chorar, suspirar e acreditar no amor de novo. Pega a pipoca, diva. 🍿</p>
+    <p class="subtexto">Romances pra rir, chorar, suspirar e acreditar no amor de novo. Pega a pipoca, diva. 🍿</p>
+    <a class="botao-gel" href="{{ url_for('filmes.novo') }}">+ cadastrar filme</a>
 </section>
 
 <section class="secao-filmes">
@@ -16,16 +17,16 @@
         {% if busca %}<a class="link-brilho" href="{{ url_for('filmes.lista') }}">limpar</a>{% endif %}
     </form>
 
-    <p class="contador">{{ filmes|length }} de {{ total }} filmes ♡</p>
+    <p class="contador">{{ filmes|length }} filmes ♡</p>
 
     {% if filmes %}
     <div class="grade-filmes">
+        {# `filmes` é a lista de objetos Filme que veio do SELECT em Filme.listar() #}
         {% for filme in filmes %}
-        <a class="cartao-filme" href="{{ url_for('filmes.detalhe', slug=filme.slug) }}">
+        <a class="cartao-filme" href="{{ url_for('filmes.detalhe', id=filme.id) }}">
             <div class="poster-moldura">
-                <img class="poster-img" src="{{ url_for('static', filename=filme.poster) }}"
-                     alt="Pôster de {{ filme.titulo }}" loading="lazy">
-                <span class="poster-numero">nº {{ "%02d"|format(loop.index) }}</span>
+                {% include "_poster.html" %}
+                <span class="poster-numero">nº {{ "%02d"|format(filme.id) }}</span>
                 <span class="poster-sticker" aria-hidden="true">{{ filme.emoji }}</span>
             </div>
             <div class="cartao-info">

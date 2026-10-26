@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo_pagina|capitalize }} ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="pagina-conta">
+    <div class="janela">
+        <div class="janela-barra">
+            <span>{{ titulo_pagina|replace(" ", "_") }}.exe</span>
+            <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
+        </div>
+
+        <div class="janela-corpo">
+            <h1 class="titulo-cromado">{{ titulo_pagina }}</h1>
+
+            {# action vazio = envia o POST para a própria URL (/filmes/novo ou /filmes/<id>/editar) #}
+            <form method="POST" action="" class="formulario">
+                <label for="titulo">título</label>
+                <input type="text" id="titulo" name="titulo" value="{{ filme.titulo or '' }}"
+                       placeholder="Diário de uma Paixão" required>
+
+                <label for="ano">ano</label>
+                <input type="number" id="ano" name="ano" value="{{ filme.ano or '' }}"
+                       placeholder="2004" min="1900" max="2100" required>
+
+                <label for="mood">mood</label>
+                <input type="text" id="mood" name="mood" value="{{ filme.mood or '' }}"
+                       placeholder="Para chorar" required>
+
+                <label for="sinopse">sinopse</label>
+                <textarea id="sinopse" name="sinopse" rows="4"
+                          placeholder="Do que se trata o filme..." required>{{ filme.sinopse or '' }}</textarea>
+
+                <label for="emoji">emoji <small>(opcional)</small></label>
+                <input type="text" id="emoji" name="emoji" value="{{ filme.emoji or '' }}" placeholder="🎬" maxlength="8">
+
+                <label for="poster">link da imagem do pôster <small>(opcional)</small></label>
+                <input type="text" id="poster" name="poster" value="{{ filme.poster or '' }}"
+                       placeholder="https://...jpg">
+
+                <button type="submit" class="botao-gel">salvar ♡</button>
+            </form>
+
+            <div class="caixa-cadastro">
+                <a class="link-brilho" href="{{ url_for('filmes.lista') }}">← voltar pros filmes</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

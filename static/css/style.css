@@ -650,3 +650,51 @@ input:focus {
         margin: 0 auto;
     }
 }
+
+/* ---------- CRUD de filmes ---------- */
+
+textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--prata);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #f3f3f7, #fff 40%);
+    color: var(--texto);
+    font: inherit;
+    resize: vertical;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: var(--rosa-choque);
+    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2), 0 0 12px rgba(255, 105, 180, 0.5);
+}
+
+.hero .botao-gel {
+    margin-top: 22px;
+}
+
+/* filme cadastrado sem imagem: mostra o emoji grandão */
+.poster-vazio {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-size: 80px;
+    background: var(--cromado-rosa);
+}
+
+.acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.acoes form {
+    margin: 0;
+}
+
+.acoes button.botao-cromado {
+    cursor: pointer;
+}

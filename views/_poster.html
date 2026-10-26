@@ -1,0 +1,8 @@
+{# Pôster: link da internet (http...), arquivo em static/img, ou só o emoji se não tiver imagem #}
+{% if filme.poster.startswith("http") %}
+    <img class="poster-img" src="{{ filme.poster }}" alt="Pôster de {{ filme.titulo }}" loading="lazy">
+{% elif filme.poster %}
+    <img class="poster-img" src="{{ url_for('static', filename=filme.poster) }}" alt="Pôster de {{ filme.titulo }}" loading="lazy">
+{% else %}
+    <div class="poster-vazio" aria-hidden="true">{{ filme.emoji }}</div>
+{% endif %}

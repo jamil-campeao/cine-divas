@@ -5,9 +5,9 @@ Site em Flask com **10 filmes de romance**, cadastro e login de usuárias, num v
 ## Funcionalidades
 - **Cadastro** com nome, e-mail e senha (o e-mail é o login)
 - **Login** com link "Você tem cadastro?" levando para o cadastro
-- **Lista de filmes** com busca e página de detalhe de cada filme
-- Usuárias salvas em **SQLite** (`instance/cine_divas.db`) com **senha hasheada**
-- Catálogo de filmes somente leitura
+- **CRUD de filmes**: cadastrar, listar (com busca), ver detalhe, editar e excluir
+- Usuárias e filmes salvos em **SQLite** (`instance/cine_divas.db`), senha sempre **hasheada**
+- Acesso ao banco com `sqlite3` puro (sem ORM), concentrado na classe `Filme` (`app/models/filme.py`)
 
 ## Requisitos
 - Python 3.10 ou superior
@@ -40,7 +40,8 @@ Na primeira vez, clique em **"Não? Clique aqui e cadastre-se"**, crie sua conta
 ## Estrutura
 ```
 run.py                 # inicia o servidor
-app/                   # código Python (app factory, banco, controllers, catálogo de filmes)
+app/                   # código Python (app factory, banco, controllers)
+app/models/filme.py    # classe Filme: todo o SQL da tabela filmes
 views/                 # páginas HTML (Jinja)
 static/css/style.css   # estilo Y2K
 static/img/            # pôsteres dos filmes
@@ -53,5 +54,6 @@ Os pôsteres pertencem aos respectivos estúdios/distribuidoras e foram obtidos 
 
 ## Dicas
 - **O CSS não aparece?** Dê Ctrl+F5 no navegador para limpar o cache.
-- **Zerar as contas:** pare o servidor e apague o arquivo `instance/cine_divas.db`.
+- **Zerar o banco:** pare o servidor e apague o arquivo `instance/cine_divas.db`. Ao subir de novo, as tabelas são
+  recriadas e os 10 filmes iniciais voltam (as contas são apagadas).
 - **Produção:** defina a variável de ambiente `SECRET_KEY` com um valor secreto.

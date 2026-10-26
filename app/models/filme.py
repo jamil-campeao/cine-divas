@@ -1,7 +1,100 @@
-# Somente leitura, para cadastrar um novo filme, colocar aqui
-FILMES = [
+import sqlite3
+
+from flask import current_app
+
+
+class Filme:
+    """Representa um filme e concentra TODO o acesso à tabela `filmes` (sqlite3 puro, sem ORM)."""
+
+    def __init__(self, titulo, ano, mood, sinopse, emoji="🎬", poster="", id=None):
+        self.id = id
+        self.titulo = titulo
+        self.ano = ano
+        self.mood = mood
+        self.sinopse = sinopse
+        self.emoji = emoji
+        self.poster = poster
+
+    # ---------- conexão e tabela ----------
+
+    @staticmethod
+    def conectar():
+        """Abre uma conexão com o arquivo .db configurado no app."""
+        conexao = sqlite3.connect(current_app.config["DATABASE"])
+        conexao.row_factory = sqlite3.Row  # permite acessar colunas pelo nome: linha["titulo"]
+        return conexao
+
+    @classmethod
+    def criar_tabela(cls):
+        """Cria a tabela (se não existir) e, se estiver vazia, grava os 10 filmes iniciais."""
+        conexao = cls.conectar()
+        conexao.execute("""
+            CREATE TABLE IF NOT EXISTS filmes (
+                id      INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo  TEXT NOT NULL,
+                ano     INTEGER NOT NULL,
+                mood    TEXT NOT NULL,
+                sinopse TEXT NOT NULL,
+                emoji   TEXT NOT NULL DEFAULT '🎬',
+                poster  TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        total = conexao.execute("SELECT COUNT(*) FROM filmes").fetchone()[0]
+        conexao.close()
+
+        if total == 0:
+            for dados in FILMES_INICIAIS:
+                cls(**dados).salvar()
+
+    # ---------- escrita (Create / Update / Delete) ----------
+
+    def salvar(self):
+        """INSERT se o filme ainda não tem id; UPDATE se já existe no banco."""
+        conexao = self.conectar()
+        if self.id is None:
+            cursor = conexao.execute(
+                "INSERT INTO filmes (titulo, ano, mood, sinopse, emoji, poster) VALUES (?, ?, ?, ?, ?, ?)",
+                (self.titulo, self.ano, self.mood, self.sinopse, self.emoji, self.poster),
+            )
+            self.id = cursor.lastrowid
+        else:
+            conexao.execute(
+                "UPDATE filmes SET titulo = ?, ano = ?, mood = ?, sinopse = ?, emoji = ?, poster = ? WHERE id = ?",
+                (self.titulo, self.ano, self.mood, self.sinopse, self.emoji, self.poster, self.id),
+            )
+        conexao.commit()
+        conexao.close()
+
+    def excluir(self):
+        conexao = self.conectar()
+        conexao.execute("DELETE FROM filmes WHERE id = ?", (self.id,))
+        conexao.commit()
+        conexao.close()
+
+    # ---------- leitura (Read) ----------
+
+    @classmethod
+    def listar(cls, busca=""):
+        """Retorna uma lista de objetos Filme vindos do banco (com filtro opcional por título)."""
+        conexao = cls.conectar()
+        linhas = conexao.execute(
+            "SELECT * FROM filmes WHERE titulo LIKE ? ORDER BY id",
+            (f"%{busca}%",),
+        ).fetchall()
+        conexao.close()
+        return [cls(**dict(linha)) for linha in linhas]
+
+    @classmethod
+    def buscar_por_id(cls, id):
+        conexao = cls.conectar()
+        linha = conexao.execute("SELECT * FROM filmes WHERE id = ?", (id,)).fetchone()
+        conexao.close()
+        return cls(**dict(linha)) if linha else None
+
+
+# seed de filmes para popular o banco
+FILMES_INICIAIS = [
     {
-        "slug": "como-perder-um-homem-em-10-dias",
         "titulo": "Como Perder um Homem em 10 Dias",
         "ano": 2003,
         "mood": "Para rir",
@@ -12,7 +105,6 @@ FILMES = [
                    "tudo dá errado. É muito bom.",
     },
     {
-        "slug": "a-culpa-e-das-estrelas",
         "titulo": "A Culpa é das Estrelas",
         "ano": 2014,
         "mood": "Para chorar",
@@ -23,7 +115,6 @@ FILMES = [
                    "fazer chorar no final.",
     },
     {
-        "slug": "minha-culpa",
         "titulo": "Minha Culpa",
         "ano": 2023,
         "mood": "Para viciar",
@@ -34,7 +125,6 @@ FILMES = [
                    "carro que prende do início ao fim.",
     },
     {
-        "slug": "legalmente-loira",
         "titulo": "Legalmente Loira",
         "ano": 2001,
         "mood": "Para se motivar",
@@ -45,7 +135,6 @@ FILMES = [
                    "dela. Um clássico de autoconfiança.",
     },
     {
-        "slug": "nos-vemos-em-venus",
         "titulo": "Nos Vemos em Vênus",
         "ano": 2023,
         "mood": "Para refletir",
@@ -56,7 +145,6 @@ FILMES = [
                    "eles tentam se curar.",
     },
     {
-        "slug": "a-cinco-passos-de-voce",
         "titulo": "A Cinco Passos de Você",
         "ano": 2019,
         "mood": "Para se emocionar",
@@ -67,7 +155,6 @@ FILMES = [
                    "os limites do amor.",
     },
     {
-        "slug": "10-coisas-que-eu-odeio-em-voce",
         "titulo": "10 Coisas que Eu Odeio em Você",
         "ano": 1999,
         "mood": "O clássico perfeito",
@@ -78,7 +165,6 @@ FILMES = [
                    "diálogos dos anos 90.",
     },
     {
-        "slug": "o-casamento-do-meu-melhor-amigo",
         "titulo": "O Casamento do Meu Melhor Amigo",
         "ano": 1997,
         "mood": "Para repensar o amor",
@@ -89,7 +175,6 @@ FILMES = [
                    "do clichê esperado.",
     },
     {
-        "slug": "meu-primeiro-amor",
         "titulo": "Meu Primeiro Amor",
         "ano": 1991,
         "mood": "Para nostalgia",
@@ -99,7 +184,6 @@ FILMES = [
                    "primeiras descobertas e perdas da vida. É sensível, simples e inesquecível.",
     },
     {
-        "slug": "de-repente-30",
         "titulo": "De Repente 30",
         "ano": 2004,
         "mood": "Para sonhar acordada",
@@ -110,7 +194,3 @@ FILMES = [
                    "amigo, Matt, e o que realmente importava. Pura vibe anos 2000.",
     },
 ]
-
-
-def buscar_filme(slug):
-    return next((f for f in FILMES if f["slug"] == slug), None)

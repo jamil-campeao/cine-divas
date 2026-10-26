@@ -6,15 +6,14 @@
 <section class="pagina-conta">
     <div class="janela janela-larga">
         <div class="janela-barra">
-            <span>filme_{{ "%02d"|format(numero) }}.avi</span>
+            <span>filme_{{ "%02d"|format(filme.id) }}.avi</span>
             <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
         </div>
 
         <div class="janela-corpo detalhe">
             <div class="poster-moldura poster-detalhe">
-                <img class="poster-img" src="{{ url_for('static', filename=filme.poster) }}"
-                     alt="Pôster de {{ filme.titulo }}">
-                <span class="poster-numero">nº {{ "%02d"|format(numero) }}</span>
+                {% include "_poster.html" %}
+                <span class="poster-numero">nº {{ "%02d"|format(filme.id) }}</span>
                 <span class="poster-sticker" aria-hidden="true">{{ filme.emoji }}</span>
             </div>
 
@@ -23,7 +22,14 @@
                 <h1 class="titulo-cromado">{{ filme.titulo }}</h1>
                 <p class="ano">★ {{ filme.ano }} ★ romance ★</p>
                 <p class="sinopse">{{ filme.sinopse }}</p>
-                <a class="botao-gel" href="{{ url_for('filmes.lista') }}">← voltar pros filmes</a>
+                <div class="acoes">
+                    <a class="botao-gel" href="{{ url_for('filmes.lista') }}">← voltar</a>
+                    <a class="botao-cromado" href="{{ url_for('filmes.editar', id=filme.id) }}">editar ✎</a>
+                    <form method="POST" action="{{ url_for('filmes.excluir', id=filme.id) }}"
+                          onsubmit="return confirm('Excluir esse filme, diva?');">
+                        <button type="submit" class="botao-cromado">excluir 🗑</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -24,6 +24,11 @@ def create_app():
 
     db.init_app(app)
 
+    from app.models.filme import Filme
+
+    with app.app_context():
+        Filme.criar_tabela()
+
     from app.controllers.auth_controller import auth
     from app.controllers.filmes_controller import filmes
 
