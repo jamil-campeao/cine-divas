@@ -1,26 +1,10 @@
-import sqlite3
-
-from app.db import (
-    inserir_filme,
-    atualizar_filme,
-    excluir_filme,
-    listar_filmes,
-    buscar_filme_por_id
-)
+from app.db import get_db
 
 
-# =====================================================================
-# CLASSE FILME
-# Representa UM filme (título, ano, mood...) e também guarda TODO o
-# SQL da tabela "filmes". As rotas não escrevem SQL: elas só criam um
-# Filme e chamam os métodos daqui (salvar, excluir, listar...).
-# =====================================================================
 class Filme:
-    """Representa um filme e organiza seus dados."""
+    """Um filme. Todo o SQL da tabela `filmes` fica nesta classe."""
 
-    def __init__(self, titulo, ano, mood, sinopse,
-                 emoji="🎬", poster="", id=None):
-
+    def __init__(self, titulo, ano, mood, sinopse, emoji="🎬", poster="", id=None):
         self.id = id
         self.titulo = titulo
         self.ano = ano
@@ -30,51 +14,39 @@ class Filme:
         self.poster = poster
 
     def salvar(self):
-        """Insere um filme novo ou atualiza um filme existente."""
-
-        dados = {
-            "titulo": self.titulo,
-            "ano": self.ano,
-            "mood": self.mood,
-            "sinopse": self.sinopse,
-            "emoji": self.emoji,
-            "poster": self.poster
-        }
+        """Sem id = filme novo (INSERT). Com id = edição (UPDATE)."""
+        conexao = get_db()
+        valores = (self.titulo, self.ano, self.mood, self.sinopse, self.emoji, self.poster)
 
         if self.id is None:
-            self.id = inserir_filme(dados)
+            cursor = conexao.execute(
+                "INSERT INTO filmes (titulo, ano, mood, sinopse, emoji, poster) VALUES (?, ?, ?, ?, ?, ?)",
+                valores,
+            )
+            self.id = cursor.lastrowid  # id gerado pelo banco
         else:
-            atualizar_filme(self.id, dados)
+            conexao.execute(
+                "UPDATE filmes SET titulo = ?, ano = ?, mood = ?, sinopse = ?, emoji = ?, poster = ? WHERE id = ?",
+                valores + (self.id,),
+            )
 
-    # -----------------------------------------------------------------
-    # excluir()  ->  DELETE
-    # Apaga ESTE filme do banco, usando o id dele.
-    # -----------------------------------------------------------------
+        conexao.commit()
+
     def excluir(self):
-        """Exclui o filme do banco de dados."""
-
-        excluir_filme(self.id)
+        conexao = get_db()
+        conexao.execute("DELETE FROM filmes WHERE id = ?", (self.id,))
+        conexao.commit()
 
     @classmethod
     def listar(cls, busca=""):
-        """Retorna os filmes encontrados no banco."""
+        """Devolve uma lista de objetos Filme (filtrando pelo título)."""
+        linhas = get_db().execute(
+            "SELECT * FROM filmes WHERE titulo LIKE ? ORDER BY id", (f"%{busca}%",)
+        ).fetchall()
+        return [cls(**dict(linha)) for linha in linhas]
 
-        linhas = listar_filmes(busca)
-
-        return [
-            cls(**dict(linha))
-            for linha in linhas
-        ]
-
-    # -----------------------------------------------------------------
-    # buscar_por_id()  ->  READ (um)
-    # Busca UM filme pelo id. Usado no detalhe, na edição e na exclusão.
-    # Devolve o objeto Filme, ou None se não achar (aí a rota mostra 404).
-    # -----------------------------------------------------------------
     @classmethod
     def buscar_por_id(cls, id):
-        """Busca um filme pelo identificador."""
-
-        linha = buscar_filme_por_id(id)
-
+        """Devolve o Filme com esse id, ou None se não existir."""
+        linha = get_db().execute("SELECT * FROM filmes WHERE id = ?", (id,)).fetchone()
         return cls(**dict(linha)) if linha else None

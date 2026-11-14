@@ -1,11 +1,10 @@
-
 import sqlite3
 
 from flask import current_app, g
 
 
 # ==================================================
-# ESTRUTURA DAS TABELAS
+# ESTRUTURA DAS TABELAS (as duas ficam no mesmo banco)
 # ==================================================
 
 SCHEMA = """
@@ -27,8 +26,10 @@ CREATE TABLE IF NOT EXISTS filmes (
 );
 """
 
+
 # ==================================================
-# FILMES INICIAIS
+# FILMES INICIAIS (gravados só quando a tabela está vazia)
+# Ordem: titulo, ano, mood, sinopse, emoji, poster
 # ==================================================
 
 FILMES_INICIAIS = [
@@ -86,184 +87,41 @@ FILMES_INICIAIS = [
 
 
 # ==================================================
-# CONEXÃO COM O BANCO
+# CONEXÃO (a única do projeto)
 # ==================================================
 
-# ---------------------------------------------------------------------
-# get_db()
-# Entrega uma conexão com o banco.
-# Na primeira vez dentro de uma requisição, abre a conexão e guarda no g.
-# Se for chamada de novo na mesma requisição, reaproveita a mesma
-# conexão em vez de abrir outra.
-# ---------------------------------------------------------------------
 def get_db():
+    """Abre a conexão uma vez por requisição e reaproveita."""
     if "db" not in g:
         g.db = sqlite3.connect(current_app.config["DATABASE"])
-        g.db.row_factory = sqlite3.Row
-
+        g.db.row_factory = sqlite3.Row  # permite linha["titulo"]
     return g.db
 
 
-# ---------------------------------------------------------------------
-# close_db()
-# Fecha a conexão guardada no g, se existir.
-# O Flask chama essa função sozinho no fim de toda requisição
-# (isso é configurado na init_app). O "error" é passado pelo Flask;
-# a gente não usa, mas o parâmetro precisa existir.
-# ---------------------------------------------------------------------
 def close_db(error=None):
+    """Fecha a conexão no fim da requisição (chamada pelo Flask)."""
     conexao = g.pop("db", None)
-
     if conexao is not None:
         conexao.close()
 
 
-
 # ==================================================
-# INICIALIZAÇÃO DO BANCO
+# INICIALIZAÇÃO (roda uma única vez, quando o site abre)
 # ==================================================
 
-# ---------------------------------------------------------------------
-# init_app()
-# Roda UMA vez quando o site liga (chamada em app/__init__.py).
-# 1) Cria a tabela "usuarios" executando o SCHEMA.
-# 2) Avisa o Flask para chamar close_db() no fim de cada requisição.
-# ---------------------------------------------------------------------
 def init_app(app):
+    """Cria as tabelas, grava os filmes iniciais e registra o close_db."""
     app.teardown_appcontext(close_db)
 
     with app.app_context():
         conexao = get_db()
-
-        # Cria as duas tabelas, caso ainda não existam.
         conexao.executescript(SCHEMA)
 
-        # Verifica se já existem filmes cadastrados.
-        total = conexao.execute(
-            "SELECT COUNT(*) FROM filmes"
-        ).fetchone()[0]
-
-        # Insere os filmes iniciais somente se a tabela estiver vazia.
+        total = conexao.execute("SELECT COUNT(*) FROM filmes").fetchone()[0]
         if total == 0:
             conexao.executemany(
-                """
-                INSERT INTO filmes
-                (titulo, ano, mood, sinopse, emoji, poster)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                FILMES_INICIAIS
+                "INSERT INTO filmes (titulo, ano, mood, sinopse, emoji, poster) VALUES (?, ?, ?, ?, ?, ?)",
+                FILMES_INICIAIS,
             )
 
         conexao.commit()
-
-
-# ==================================================
-# OPERAÇÕES DOS FILMES
-# ==================================================
-
-def inserir_filme(dados):
-    conexao = get_db()
-
-    cursor = conexao.execute(
-        """
-        INSERT INTO filmes
-        (titulo, ano, mood, sinopse, emoji, poster)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        (
-            dados["titulo"],
-            dados["ano"],
-            dados["mood"],
-            dados["sinopse"],
-            dados["emoji"],
-            dados["poster"]
-        )
-    )
-
-    conexao.commit()
-
-    return cursor.lastrowid
-
-
-def atualizar_filme(id, dados):
-    conexao = get_db()
-
-    conexao.execute(
-        """
-        UPDATE filmes
-        SET titulo = ?, ano = ?, mood = ?, sinopse = ?,
-            emoji = ?, poster = ?
-        WHERE id = ?
-        """,
-        (
-            dados["titulo"],
-            dados["ano"],
-            dados["mood"],
-            dados["sinopse"],
-            dados["emoji"],
-            dados["poster"],
-            id
-        )
-    )
-
-    conexao.commit()
-
-
-def excluir_filme(id):
-    conexao = get_db()
-
-    conexao.execute(
-        "DELETE FROM filmes WHERE id = ?",
-        (id,)
-    )
-
-    conexao.commit()
-
-
-def listar_filmes(busca=""):
-    conexao = get_db()
-
-    return conexao.execute(
-        """
-        SELECT * FROM filmes
-        WHERE titulo LIKE ?
-        ORDER BY id
-        """,
-        (f"%{busca}%",)
-    ).fetchall()
-
-
-def buscar_filme_por_id(id):
-    conexao = get_db()
-
-    return conexao.execute(
-        "SELECT * FROM filmes WHERE id = ?",
-        (id,)
-    ).fetchone()
-
-
-# ==================================================
-# OPERAÇÕES DAS USUÁRIAS
-# ==================================================
-
-def criar_usuario(nome, email, senha_hash):
-    conexao = get_db()
-
-    conexao.execute(
-        """
-        INSERT INTO usuarios (nome, email, senha_hash)
-        VALUES (?, ?, ?)
-        """,
-        (nome, email, senha_hash)
-    )
-
-    conexao.commit()
-
-
-def buscar_usuario_por_email(email):
-    conexao = get_db()
-
-    return conexao.execute(
-        "SELECT * FROM usuarios WHERE email = ?",
-        (email,)
-    ).fetchone()

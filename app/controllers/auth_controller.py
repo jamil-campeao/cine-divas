@@ -13,7 +13,7 @@ from werkzeug.security import (
     generate_password_hash
 )
 
-from app.db import criar_usuario, buscar_usuario_por_email
+from app.models.usuario import Usuario
 
 
 auth = Blueprint("auth", __name__)
@@ -58,9 +58,7 @@ def cadastro():
 
         else:
             try:
-                senha_hash = generate_password_hash(senha)
-
-                criar_usuario(nome, email, senha_hash)
+                Usuario(nome, email, generate_password_hash(senha)).salvar()
 
                 flash("Conta criada! Agora é só entrar 💗", "sucesso")
 
@@ -88,12 +86,12 @@ def login():
         email = request.form.get("email", "").strip().lower()
         senha = request.form.get("senha", "")
 
-        usuario = buscar_usuario_por_email(email)
+        usuario = Usuario.buscar_por_email(email)
 
-        if usuario and check_password_hash(usuario["senha_hash"], senha):
+        if usuario and check_password_hash(usuario.senha_hash, senha):
             session.clear()
-            session["usuario_id"] = usuario["id"]
-            session["usuario_nome"] = usuario["nome"]
+            session["usuario_id"] = usuario.id
+            session["usuario_nome"] = usuario.nome
 
             return redirect(url_for("filmes.lista"))
 

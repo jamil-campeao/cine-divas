@@ -7,7 +7,8 @@ Site em Flask com **10 filmes de romance**, cadastro e login de usuárias, num v
 - **Login** com link "Você tem cadastro?" levando para o cadastro
 - **CRUD de filmes**: cadastrar, listar (com busca), ver detalhe, editar e excluir
 - Usuárias e filmes salvos em **SQLite** (`instance/cine_divas.db`), senha sempre **hasheada**
-- Acesso ao banco com `sqlite3` puro (sem ORM), concentrado na classe `Filme` (`app/models/filme.py`)
+- Acesso ao banco com `sqlite3` puro (sem ORM): uma conexão única em `app/db.py` e o SQL dentro das classes `Filme` e `Usuario`
+- Testes automáticos com `unittest`
 
 ## Requisitos
 - Python 3.10 ou superior
@@ -41,7 +42,10 @@ Na primeira vez, clique em **"Não? Clique aqui e cadastre-se"**, crie sua conta
 ```
 run.py                 # inicia o servidor
 app/                   # código Python (app factory, banco, controllers)
+app/db.py              # conexão única + criação das tabelas (uma vez, ao abrir)
 app/models/filme.py    # classe Filme: todo o SQL da tabela filmes
+app/models/usuario.py  # classe Usuario: todo o SQL da tabela usuarios
+tests/test_app.py      # testes automáticos
 views/                 # páginas HTML (Jinja)
 static/css/style.css   # estilo Y2K
 static/img/            # pôsteres dos filmes
@@ -52,7 +56,16 @@ instance/              # banco SQLite (criado automaticamente)
 Os pôsteres pertencem aos respectivos estúdios/distribuidoras e foram obtidos da Wikipédia (en) e do
 [TMDB](https://www.themoviedb.org/) (*Nos Vemos em Vênus*). Uso apenas educacional, sem fins comerciais.
 
+## Testes
+Com o ambiente virtual ativado, na pasta do projeto:
+```bash
+python -m unittest -v
+```
+Os testes usam um banco temporário, então suas contas e filmes não são alterados.
+
 ## Dicas
+- **Mudou o código?** Pare o servidor (Ctrl+C) e rode `python run.py` de novo. O recarregamento automático fica
+  desligado para as tabelas serem criadas uma única vez.
 - **O CSS não aparece?** Dê Ctrl+F5 no navegador para limpar o cache.
 - **Zerar o banco:** pare o servidor e apague o arquivo `instance/cine_divas.db`. Ao subir de novo, as tabelas são
   recriadas e os 10 filmes iniciais voltam (as contas são apagadas).

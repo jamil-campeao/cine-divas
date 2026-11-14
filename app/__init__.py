@@ -12,7 +12,7 @@ RAIZ = os.path.abspath(
 )
 
 
-def create_app():
+def create_app(config=None):
 
     app = Flask(
         __name__,
@@ -32,9 +32,13 @@ def create_app():
         "cine_divas.db"
     )
 
+    # Permite trocar configurações (os testes usam um banco temporário).
+    if config:
+        app.config.update(config)
+
     os.makedirs(app.instance_path, exist_ok=True)
 
-    # Inicializa o banco e cria as tabelas.
+    # Cria as tabelas uma única vez, quando o site abre.
     db.init_app(app)
 
     # Importa os controllers.
