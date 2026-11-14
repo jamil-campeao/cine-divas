@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     senha_hash TEXT NOT NULL,
     criado_em  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE IF NOT EXISTS filmes (
     id      INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo  TEXT NOT NULL,
@@ -27,7 +26,6 @@ CREATE TABLE IF NOT EXISTS filmes (
     poster  TEXT NOT NULL DEFAULT ''
 );
 """
-
 
 # ==================================================
 # FILMES INICIAIS
@@ -91,6 +89,13 @@ FILMES_INICIAIS = [
 # CONEXÃO COM O BANCO
 # ==================================================
 
+# ---------------------------------------------------------------------
+# get_db()
+# Entrega uma conexão com o banco.
+# Na primeira vez dentro de uma requisição, abre a conexão e guarda no g.
+# Se for chamada de novo na mesma requisição, reaproveita a mesma
+# conexão em vez de abrir outra.
+# ---------------------------------------------------------------------
 def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(current_app.config["DATABASE"])
@@ -99,6 +104,13 @@ def get_db():
     return g.db
 
 
+# ---------------------------------------------------------------------
+# close_db()
+# Fecha a conexão guardada no g, se existir.
+# O Flask chama essa função sozinho no fim de toda requisição
+# (isso é configurado na init_app). O "error" é passado pelo Flask;
+# a gente não usa, mas o parâmetro precisa existir.
+# ---------------------------------------------------------------------
 def close_db(error=None):
     conexao = g.pop("db", None)
 
@@ -106,10 +118,17 @@ def close_db(error=None):
         conexao.close()
 
 
+
 # ==================================================
 # INICIALIZAÇÃO DO BANCO
 # ==================================================
 
+# ---------------------------------------------------------------------
+# init_app()
+# Roda UMA vez quando o site liga (chamada em app/__init__.py).
+# 1) Cria a tabela "usuarios" executando o SCHEMA.
+# 2) Avisa o Flask para chamar close_db() no fim de cada requisição.
+# ---------------------------------------------------------------------
 def init_app(app):
     app.teardown_appcontext(close_db)
 

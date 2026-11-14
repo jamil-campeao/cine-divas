@@ -1,3 +1,4 @@
+import sqlite3
 
 from app.db import (
     inserir_filme,
@@ -8,6 +9,12 @@ from app.db import (
 )
 
 
+# =====================================================================
+# CLASSE FILME
+# Representa UM filme (título, ano, mood...) e também guarda TODO o
+# SQL da tabela "filmes". As rotas não escrevem SQL: elas só criam um
+# Filme e chamam os métodos daqui (salvar, excluir, listar...).
+# =====================================================================
 class Filme:
     """Representa um filme e organiza seus dados."""
 
@@ -39,6 +46,10 @@ class Filme:
         else:
             atualizar_filme(self.id, dados)
 
+    # -----------------------------------------------------------------
+    # excluir()  ->  DELETE
+    # Apaga ESTE filme do banco, usando o id dele.
+    # -----------------------------------------------------------------
     def excluir(self):
         """Exclui o filme do banco de dados."""
 
@@ -55,6 +66,11 @@ class Filme:
             for linha in linhas
         ]
 
+    # -----------------------------------------------------------------
+    # buscar_por_id()  ->  READ (um)
+    # Busca UM filme pelo id. Usado no detalhe, na edição e na exclusão.
+    # Devolve o objeto Filme, ou None se não achar (aí a rota mostra 404).
+    # -----------------------------------------------------------------
     @classmethod
     def buscar_por_id(cls, id):
         """Busca um filme pelo identificador."""
