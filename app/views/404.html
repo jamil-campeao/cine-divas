@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Não encontrado ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="pagina-conta">
+    <div class="janela">
+        <div class="janela-barra">
+            <span>erro_404.exe</span>
+            <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
+        </div>
+
+        <div class="janela-corpo">
+            <h1 class="titulo-cromado">ops, 404</h1>
+            <p class="subtexto">Essa página não existe (ou não é sua), diva. 💔</p>
+            <a class="botao-gel" href="{{ url_for('filmes.inicio') }}">← voltar pro início</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

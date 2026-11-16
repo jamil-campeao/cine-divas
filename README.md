@@ -1,72 +1,71 @@
 # ♡ Cine Divas ♡
 
-Site em Flask com **10 filmes de romance**, cadastro e login de usuárias, num visual bem **anos 2000** (rosa e prata, brega com orgulho ✧).
+Aplicação web MPA em **Flask + Jinja2 + SQLite3** para guardar e avaliar **filmes de romance**, num visual bem
+**anos 2000** (rosa e prata, brega com orgulho ✧). Projeto final de Laboratório de Programação 1 (SPOLBP1).
 
 ## Funcionalidades
-- **Cadastro** com nome, e-mail e senha (o e-mail é o login)
-- **Login** com link "Você tem cadastro?" levando para o cadastro
-- **CRUD de filmes**: cadastrar, listar (com busca), ver detalhe, editar e excluir
-- Usuárias e filmes salvos em **SQLite** (`instance/cine_divas.db`), senha sempre **hasheada**
-- Acesso ao banco com `sqlite3` puro (sem ORM): uma conexão única em `app/db.py` e o SQL dentro das classes `Filme` e `Usuario`
-- Testes automáticos com `unittest`
+- **Usuárias:** cadastro, login e logout. Senha sempre com hash (`werkzeug.security`).
+- **Filmes:** cadastrar, listar (com busca por título), ver detalhe, editar e excluir.
+- **Avaliações:** dar nota (1 a 5) e comentário a um filme, listar as minhas avaliações e excluir.
+- Cada usuária só vê e mexe nos **próprios** filmes e avaliações (`WHERE usuario_id = ?`).
+- Middleware `@login_required` (valida a usuária no banco e guarda em `g.usuario`).
+- **Cookie** que lembra o último e-mail usado no login (30 dias).
+- Flash messages por categoria, página **404** personalizada e **logs** (`app.logger`).
 
-## Requisitos
-- Python 3.10 ou superior
+## 🔑 Usuária de teste
+Criada pelo `iniciar_bd.py`, já com os 10 filmes iniciais:
 
-## Como executar (Windows)
+| E-mail | Senha |
+|---|---|
+| `diva@cinedivas.com` | `diva123` |
 
-1. Abra o terminal na pasta do projeto.
-2. Crie o ambiente virtual (só na primeira vez):
+## Como executar
+
+1. Crie e ative o ambiente virtual (só na primeira vez):
    ```bash
    python -m venv venv
    ```
-3. Ative o ambiente virtual:
-   - PowerShell: `venv\Scripts\Activate.ps1`
-   - CMD: `venv\Scripts\activate.bat`
-   - Git Bash: `source venv/Scripts/activate`
-4. Instale as dependências:
+   - Windows: `venv\Scripts\activate`
+   - Linux/macOS: `source venv/bin/activate`
+2. Instale as dependências:
    ```bash
    pip install -r requirements.txt
    ```
-5. Rode o servidor:
+3. Crie o banco (tabelas + usuária de teste + 10 filmes). Pode rodar de novo sem duplicar nada:
+   ```bash
+   python iniciar_bd.py
+   ```
+4. Rode o servidor e acesse **http://127.0.0.1:5000**:
    ```bash
    python run.py
    ```
-6. Acesse **http://127.0.0.1:5000** no navegador.
 
-Na primeira vez, clique em **"Não? Clique aqui e cadastre-se"**, crie sua conta e depois faça login.
-
-> No Linux/macOS, troque o passo 3 por `source venv/bin/activate`.
-
-## Estrutura
+## Estrutura (MVC)
 ```
-run.py                 # inicia o servidor
-app/                   # código Python (app factory, banco, controllers)
-app/db.py              # conexão única + criação das tabelas (uma vez, ao abrir)
-app/models/filme.py    # classe Filme: todo o SQL da tabela filmes
-app/models/usuario.py  # classe Usuario: todo o SQL da tabela usuarios
-tests/test_app.py      # testes automáticos
-views/                 # páginas HTML (Jinja)
-static/css/style.css   # estilo Y2K
-static/img/            # pôsteres dos filmes
-instance/              # banco SQLite (criado automaticamente)
+iniciar_bd.py               # cria as tabelas (CREATE TABLE) e os dados iniciais
+banco_sistema.db            # banco SQLite (gerado pelo iniciar_bd.py)
+run.py                      # inicia o servidor Flask
+app/
+  __init__.py               # create_app: secret_key, blueprints, erro 404 e logger
+  db.py                     # classe DatabaseConnection (__enter__ e __exit__)
+  models/                   # Usuario, Filme, Avaliacao (todo o SQL fica aqui)
+  controllers/              # blueprints auth_bp, filmes_bp, avaliacoes_bp (sem SQL)
+  utils/auth_middleware.py  # decorator @login_required
+  views/                    # templates Jinja2 (herdam de base.html)
+  static/                   # CSS e pôsteres
+tests/test_app.py           # testes automáticos
 ```
+
+## Testes
+```bash
+python -m unittest -v
+```
+Os testes usam um banco temporário, então o `banco_sistema.db` não é alterado.
+
+## Dicas
+- **Zerar o banco:** apague o `banco_sistema.db` e rode `python iniciar_bd.py` de novo.
+- **O CSS não aparece?** Ctrl+F5 no navegador.
 
 ## Créditos das imagens
 Os pôsteres pertencem aos respectivos estúdios/distribuidoras e foram obtidos da Wikipédia (en) e do
 [TMDB](https://www.themoviedb.org/) (*Nos Vemos em Vênus*). Uso apenas educacional, sem fins comerciais.
-
-## Testes
-Com o ambiente virtual ativado, na pasta do projeto:
-```bash
-python -m unittest -v
-```
-Os testes usam um banco temporário, então suas contas e filmes não são alterados.
-
-## Dicas
-- **Mudou o código?** Pare o servidor (Ctrl+C) e rode `python run.py` de novo. O recarregamento automático fica
-  desligado para as tabelas serem criadas uma única vez.
-- **O CSS não aparece?** Dê Ctrl+F5 no navegador para limpar o cache.
-- **Zerar o banco:** pare o servidor e apague o arquivo `instance/cine_divas.db`. Ao subir de novo, as tabelas são
-  recriadas e os 10 filmes iniciais voltam (as contas são apagadas).
-- **Produção:** defina a variável de ambiente `SECRET_KEY` com um valor secreto.

@@ -24,9 +24,10 @@
         </a>
 
         <nav class="menu">
-            {% if session.usuario_id %}
-                <span class="ola">oi, {{ session.usuario_nome }} ♡</span>
+            {% if session.user_id %}
+                <span class="ola">oi, {{ session.username }} ♡</span>
                 <a class="botao-cromado" href="{{ url_for('filmes.lista') }}">filmes</a>
+                <a class="botao-cromado" href="{{ url_for('avaliacoes.lista') }}">avaliações</a>
                 <a class="botao-cromado" href="{{ url_for('auth.logout') }}">sair</a>
             {% else %}
                 <a class="botao-cromado" href="{{ url_for('auth.login') }}">entrar</a>

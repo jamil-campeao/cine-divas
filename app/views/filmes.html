@@ -21,7 +21,7 @@
 
     {% if filmes %}
     <div class="grade-filmes">
-        {# `filmes` é a lista de objetos Filme que veio do SELECT em Filme.listar() #}
+        {# `filmes` vem do SELECT em Filme.listar_por_usuario() #}
         {% for filme in filmes %}
         <a class="cartao-filme" href="{{ url_for('filmes.detalhe', id=filme.id) }}">
             <div class="poster-moldura">

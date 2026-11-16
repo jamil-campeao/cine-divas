@@ -698,3 +698,52 @@ textarea:focus {
 .acoes button.botao-cromado {
     cursor: pointer;
 }
+
+/* ---------- Avaliações ---------- */
+
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--prata);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--rosa-choque);
+    font: inherit;
+    font-size: 18px;
+}
+
+.avaliacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 2px dotted var(--rosa);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.avaliacao p {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+.estrelas {
+    color: var(--rosa-choque);
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.avaliacao form {
+    margin-left: auto;
+}
+
+.avaliacao button {
+    cursor: pointer;
+}
+
+.pagina-conta + .pagina-conta,
+.janela + .janela {
+    margin-top: 10px;
+}

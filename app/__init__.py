@@ -1,52 +1,24 @@
-
+import logging
 import os
 
-from flask import Flask
-
-from app import db
+from flask import Flask, render_template
 
 
-# Raiz do projeto
-RAIZ = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..")
-)
+def create_app():
+    app = Flask(__name__, template_folder="views")
+    app.secret_key = os.environ.get("SECRET_KEY", "cine-divas-chave-local")
+    app.logger.setLevel(logging.INFO)
 
+    from app.controllers.auth_controller import auth_bp
+    from app.controllers.avaliacoes_controller import avaliacoes_bp
+    from app.controllers.filmes_controller import filmes_bp
 
-def create_app(config=None):
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(filmes_bp)
+    app.register_blueprint(avaliacoes_bp)
 
-    app = Flask(
-        __name__,
-        template_folder=os.path.join(RAIZ, "views"),
-        static_folder=os.path.join(RAIZ, "static"),
-        static_url_path="/static",
-        instance_path=os.path.join(RAIZ, "instance"),
-    )
-
-    app.config["SECRET_KEY"] = os.environ.get(
-        "SECRET_KEY",
-        "cine-divas-chave-local"
-    )
-
-    app.config["DATABASE"] = os.path.join(
-        app.instance_path,
-        "cine_divas.db"
-    )
-
-    # Permite trocar configurações (os testes usam um banco temporário).
-    if config:
-        app.config.update(config)
-
-    os.makedirs(app.instance_path, exist_ok=True)
-
-    # Cria as tabelas uma única vez, quando o site abre.
-    db.init_app(app)
-
-    # Importa os controllers.
-    from app.controllers.auth_controller import auth
-    from app.controllers.filmes_controller import filmes
-
-    # Registra as rotas.
-    app.register_blueprint(auth)
-    app.register_blueprint(filmes)
+    @app.errorhandler(404)
+    def pagina_nao_encontrada(erro):
+        return render_template("404.html"), 404
 
     return app

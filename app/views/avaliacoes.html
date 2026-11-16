@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Avaliações ♡ Cine Divas{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="selo">★ minhas avaliações ★</p>
+    <h1 class="titulo-cromado titulo-grande">o que eu achei</h1>
+    <p class="subtexto">Para avaliar, abra um filme e dê a sua nota. 🍿</p>
+</section>
+
+<section class="pagina-conta">
+    <div class="janela janela-larga">
+        <div class="janela-barra">
+            <span>minhas_avaliacoes.txt</span>
+            <span class="janela-botoes" aria-hidden="true">_ □ ×</span>
+        </div>
+
+        <div class="janela-corpo">
+            {% for avaliacao in avaliacoes %}
+                <div class="avaliacao">
+                    <a class="link-brilho" href="{{ url_for('filmes.detalhe', id=avaliacao.filme_id) }}">{{ avaliacao.filme_titulo }}</a>
+                    <span class="estrelas">{{ "★" * avaliacao.nota }}{{ "☆" * (5 - avaliacao.nota) }}</span>
+                    {% if avaliacao.comentario %}<p>{{ avaliacao.comentario }}</p>{% endif %}
+                    <form method="POST" action="{{ url_for('avaliacoes.excluir', id=avaliacao.id) }}">
+                        <button type="submit" class="botao-cromado">excluir 🗑</button>
+                    </form>
+                </div>
+            {% else %}
+                <p class="subtexto">Você ainda não avaliou nenhum filme. 💔</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

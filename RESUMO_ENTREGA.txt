@@ -1,0 +1,36 @@
+SPOLBP1 - Projeto Final - Aplicação Web MPA com Flask
+Prof. Igor de Moraes
+
+Nome completo: [PREENCHER]
+Prontuário: [PREENCHER]
+
+1. RESUMO DO TRABALHO
+
+Título: Cine Divas
+Tema: catálogo pessoal de filmes de romance, com avaliações, num visual inspirado nos anos 2000.
+
+Entidades gerenciadas:
+- Usuários: cadastro, login e logout, com senha protegida por hash (werkzeug.security).
+- Filmes: título, ano, mood, sinopse, emoji e pôster. Cada usuária gerencia os próprios filmes.
+- Avaliações: nota de 1 a 5 e comentário, ligadas a um filme e à usuária (FOREIGN KEY com ON DELETE CASCADE).
+
+Funcionalidades implementadas:
+- Filmes: cadastro, listagem com busca por título, detalhe, edição e exclusão.
+- Avaliações: cadastro na página do filme, listagem das minhas avaliações e exclusão.
+- Todas as consultas, edições e exclusões filtram pelo usuário logado (usuario_id).
+- Padrão MVC com Blueprints (auth_bp, filmes_bp, avaliacoes_bp) e zero SQL nos controllers.
+- Classe DatabaseConnection (__enter__ e __exit__) e script iniciar_bd.py.
+- Middleware @login_required validando o usuário no banco e guardando em g.usuario.
+- Sessão (session.clear, user_id, username), cookie que lembra o último e-mail do login (30 dias).
+- Flash messages por categoria, validações no back-end, página 404 personalizada e logs com app.logger.
+- Extras: edição de filmes, busca, relacionamento filme -> avaliações, interface temática e testes automáticos (unittest).
+
+Usuário de teste (criado pelo iniciar_bd.py):
+- E-mail: diva@cinedivas.com
+- Senha: diva123
+
+2. LINK DO REPOSITÓRIO NO GITHUB
+https://github.com/jamil-campeao/cine-divas
+
+3. LINK DO VÍDEO EXPLICATIVO
+[PREENCHER]

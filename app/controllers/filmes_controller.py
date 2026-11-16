@@ -1,13 +1,14 @@
-from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, current_app, flash, g, redirect, render_template, request, session, url_for
 
-from app.controllers.auth_controller import login_obrigatorio
+from app.models.avaliacao import Avaliacao
 from app.models.filme import Filme
+from app.utils.auth_middleware import login_required
 
-filmes = Blueprint("filmes", __name__)
+filmes_bp = Blueprint("filmes", __name__)
 
 
 def ler_formulario():
-    """Pega os campos do formulário HTML e valida. Retorna (dados, erro)."""
+    """Pega os campos do formulário e valida. Devolve (dados, erro)."""
     dados = {
         "titulo": request.form.get("titulo", "").strip(),
         "ano": request.form.get("ano", "").strip(),
@@ -18,45 +19,46 @@ def ler_formulario():
     }
     if not dados["titulo"] or not dados["ano"] or not dados["mood"] or not dados["sinopse"]:
         return dados, "Preencha título, ano, mood e sinopse."
-    if not dados["ano"].isdigit():
-        return dados, "O ano precisa ser um número."
+    if len(dados["titulo"]) > 100 or len(dados["mood"]) > 40 or len(dados["sinopse"]) > 1000:
+        return dados, "Título até 100, mood até 40 e sinopse até 1000 caracteres."
+    if not dados["ano"].isdigit() or not 1900 <= int(dados["ano"]) <= 2100:
+        return dados, "O ano precisa ser um número entre 1900 e 2100."
     dados["ano"] = int(dados["ano"])
     return dados, None
 
 
 def buscar_ou_404(id):
-    filme = Filme.buscar_por_id(id)
+    filme = Filme.buscar_por_id(id, g.usuario.id)
     if filme is None:
         abort(404)
     return filme
 
 
-@filmes.route("/")
+@filmes_bp.route("/")
 def inicio():
-    if "usuario_id" not in session:
-        return redirect(url_for("auth.login"))
-    return redirect(url_for("filmes.lista"))
+    if session.get("user_id"):
+        return redirect(url_for("filmes.lista"))
+    return redirect(url_for("auth.login"))
 
 
-# ---------- Read: listagem e detalhe ----------
-
-@filmes.route("/filmes")
-@login_obrigatorio
+@filmes_bp.route("/filmes")
+@login_required
 def lista():
     busca = request.args.get("busca", "").strip()
-    return render_template("filmes.html", filmes=Filme.listar(busca), busca=busca)
+    filmes = Filme.listar_por_usuario(g.usuario.id, busca)
+    return render_template("filmes.html", filmes=filmes, busca=busca)
 
 
-@filmes.route("/filmes/<int:id>")
-@login_obrigatorio
+@filmes_bp.route("/filmes/<int:id>")
+@login_required
 def detalhe(id):
-    return render_template("filme.html", filme=buscar_ou_404(id))
+    filme = buscar_ou_404(id)
+    avaliacoes = Avaliacao.listar_por_filme(id, g.usuario.id)
+    return render_template("filme.html", filme=filme, avaliacoes=avaliacoes)
 
 
-# ---------- Create ----------
-
-@filmes.route("/filmes/novo", methods=["GET", "POST"])
-@login_obrigatorio
+@filmes_bp.route("/filmes/novo", methods=["GET", "POST"])
+@login_required
 def novo():
     if request.method == "POST":
         dados, erro = ler_formulario()
@@ -64,18 +66,17 @@ def novo():
             flash(erro, "erro")
             return render_template("filme_form.html", filme=dados, titulo_pagina="novo filme")
 
-        filme = Filme(**dados)  # 1) crio o objeto com os dados do formulário
-        filme.salvar()          # 2) a classe faz o INSERT no banco
+        filme = Filme(**dados, usuario_id=g.usuario.id)
+        filme.salvar()
+        current_app.logger.info("Filme cadastrado: %s (usuária %s)", filme.titulo, g.usuario.id)
         flash("Filme cadastrado! 💗", "sucesso")
         return redirect(url_for("filmes.lista"))
 
     return render_template("filme_form.html", filme={}, titulo_pagina="novo filme")
 
 
-# ---------- Update ----------
-
-@filmes.route("/filmes/<int:id>/editar", methods=["GET", "POST"])
-@login_obrigatorio
+@filmes_bp.route("/filmes/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def editar(id):
     filme = buscar_ou_404(id)
 
@@ -85,19 +86,18 @@ def editar(id):
             flash(erro, "erro")
             return render_template("filme_form.html", filme=dados, titulo_pagina="editar filme")
 
-        filme = Filme(id=id, **dados)  # com id, salvar() faz UPDATE
-        filme.salvar()
+        Filme(**dados, usuario_id=g.usuario.id, id=id).atualizar()
         flash("Filme atualizado! ✧", "sucesso")
         return redirect(url_for("filmes.detalhe", id=id))
 
     return render_template("filme_form.html", filme=filme, titulo_pagina="editar filme")
 
 
-# ---------- Delete ----------
-
-@filmes.route("/filmes/<int:id>/excluir", methods=["POST"])
-@login_obrigatorio
+@filmes_bp.route("/filmes/<int:id>/excluir", methods=["POST"])
+@login_required
 def excluir(id):
-    buscar_ou_404(id).excluir()
+    filme = buscar_ou_404(id)
+    filme.excluir()
+    current_app.logger.info("Filme excluído: %s (usuária %s)", filme.titulo, g.usuario.id)
     flash("Filme excluído. 💔", "sucesso")
     return redirect(url_for("filmes.lista"))
